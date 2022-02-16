@@ -23,7 +23,11 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         pass
 
     def NullBit_Assign_Functions(self):
-        pass
+
+        self.Clear_Button.clicked.connect(self.Clear_All)
+
+
+
 
 
 
