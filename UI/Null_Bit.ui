@@ -120,6 +120,11 @@
          </item>
          <item>
           <property name="text">
+           <string>Caesar Cipher</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>Pig Latin</string>
           </property>
          </item>
