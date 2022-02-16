@@ -144,9 +144,13 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         if (self.Mode_Selection.currentText() == "Encrypt"):
             if (currentType == "XOR Cipher"):
                 self.EncryptXOR()
+            elif (currentType == "Columnar Transposition Cipher"):
+                self.EncryptColumnar()
         else:
             if (currentType == "XOR Cipher"):
                 self.DecryptXOR()
+            elif (currentType == "Columnar Transposition Cipher"):
+                self.DecryptColumnar()
 
     def Change_Mode(self):
         """
