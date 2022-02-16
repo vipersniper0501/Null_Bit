@@ -4,6 +4,10 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtCore import Qt
 
 from UI.Null_Bit import Ui_MainWindow
+from XOR import XOR_Cipher
+from COLUMNAR import Columnar_Cipher
+from VIGENERE import Vigenere_Cipher
+
 
 class NullBitMainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -18,10 +22,20 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
 
     def EncryptXOR(self):
-        pass
+        cipher = XOR_Cipher()
+        msg = self.Input_Box.toPlainText()
+
+        cipher.encrypt(msg)
+        self.Output_Box.setPlainText(str(cipher.cipher_text)[2:-1])
+        self.Key_Box.setText(str(cipher.key)[2:-1])
 
     def DecryptXOR(self):
-        pass
+        cipher = XOR_Cipher()
+        msg = self.Input_Box.toPlainText()
+        key = self.Key_Box.text()
+
+        cipher.decrypt(msg, key)
+        self.Output_Box.setPlainText(str(cipher.cipher_text))
 
     def Run(self):
         currentType = self.Type_Selection.currentText()

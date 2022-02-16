@@ -23,4 +23,7 @@ class XOR_Cipher():
         self.cipher_text = self.xor_strings(s.encode("ISO-8859-1"), self.key)
 
     def decrypt(self, s: str, k: str):
-        self.cipher_text = self.xor_strings(s, k).decode("ISO-8859-1")
+        self.cipher_text = self.xor_strings(
+            s.encode("ISO-8859-1").decode('unicode-escape').encode("ISO-8859-1"),
+            k.encode("ISO-8859-1").decode('unicode-escape').encode("ISO-8859-1")
+        ).decode("ISO-8859-1")
