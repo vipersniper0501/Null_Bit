@@ -48,18 +48,23 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
     def Change_Mode(self):
         currentType = self.Type_Selection.currentText()
+        self.Output_Box.setPlainText("")
 
         if (self.Mode_Selection.currentText() == "Encrypt"):
             if (currentType == "XOR Cipher"):
+                self.Key_Box.setReadOnly(True)
                 self.Load_Key_Button.setDisabled(True)
             self.Title1.setText("Encrypt Text (Input):")
             self.Title2.setText("Encoded Text (Output):")
             self.Key_Label.setText("Encryption Key:")
+            self.Save_Output_Button.setText("Save Encrypted Output To File")
         else:
             self.Title1.setText("Decrypt Text (Input):")
             self.Title2.setText("Decoded Text (Output):")
             self.Key_Label.setText("Decryption Key:")
+            self.Save_Output_Button.setText("Save Decrypted Output To File")
             if currentType == "XOR Cipher":
+                self.Key_Box.setReadOnly(False)
                 self.Load_Key_Button.setDisabled(False)
 
     def Clear_All(self):
