@@ -45,13 +45,18 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             self.Title1.setText("Decrypt Text (Input):")
             self.Title2.setText("Decoded Text (Output):")
             self.Key_Label.setText("Decryption Key:")
-            if (currentType == "XOR Cipher"):
+            if currentType == "XOR Cipher":
                 self.Load_Key_Button.setDisabled(False)
 
     def Clear_All(self):
-        pass
+        """
+        Resets Input, Output, and Key boxes
+        """
 
     def NullBit_Assign_Functions(self):
+        """
+        Assigns functions to ui buttons along with running startup code.
+        """
 
         self.Change_Mode()
 
