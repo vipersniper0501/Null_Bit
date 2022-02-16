@@ -37,6 +37,30 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         cipher.decrypt(msg, key)
         self.Output_Box.setPlainText(str(cipher.cipher_text))
 
+    def EncryptColumnar(self):
+        pass
+
+    def DecryptColumnar(self):
+        pass
+
+    def EncryptVigenere(self):
+        pass
+
+    def DecryptVigenere(self):
+        pass
+
+    def EncryptPigLatin(self):
+        pass
+
+    def DecryptPigLatin(self):
+        pass
+
+    def EncryptCaesar(self):
+        pass
+
+    def DecryptCaesar(self):
+        pass
+
     def Run(self):
         currentType = self.Type_Selection.currentText()
         if (self.Mode_Selection.currentText() == "Encrypt"):
