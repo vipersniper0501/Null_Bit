@@ -68,7 +68,10 @@ class Columnar_Cipher():
             curr_idx = key.index(key_lst[k_indx])
 
             for j in range(row):
-                dec_cipher[j][curr_idx] = msg_lst[msg_indx]
+                try:
+                    dec_cipher[j][curr_idx] = msg_lst[msg_indx]
+                except IndexError:
+                    dec_cipher[j][curr_idx] = "."
                 msg_indx += 1
             k_indx += 1
 
@@ -77,7 +80,7 @@ class Columnar_Cipher():
             self.cipher_text = ''.join(sum(dec_cipher, []))
         except TypeError:
             raise TypeError("This program cannot",
-                            "handle repeating words.")
+                            "handle repeating letters.")
 
         null_count = self.cipher_text.count('_')
 
