@@ -52,6 +52,9 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         """
         Resets Input, Output, and Key boxes
         """
+        self.Input_Box.setPlainText("")
+        self.Output_Box.setPlainText("")
+        self.Key_Box.setText("")
 
     def NullBit_Assign_Functions(self):
         """
@@ -63,6 +66,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
         self.Execute.clicked.connect(self.Run)
         self.Mode_Selection.currentIndexChanged.connect(self.Change_Mode)
+        self.Type_Selection.currentIndexChanged.connect(self.Clear_All)
         self.Clear_Button.clicked.connect(self.Clear_All)
 
 
