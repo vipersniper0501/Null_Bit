@@ -33,6 +33,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         self.Output_Box.setPlainText(str(cipher.cipher_text)[2:-1])
         self.Key_Box.setText(str(cipher.key)[2:-1])
 
+
     def DecryptXOR(self):
         """
         Decrypts XOR ciphertext provided in the Input Box using the provided 
@@ -44,6 +45,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
         cipher.decrypt(msg, key)
         self.Output_Box.setPlainText(str(cipher.cipher_text))
+
 
     def EncryptColumnar(self):
         """
@@ -118,9 +120,40 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         Cipher using the provided key.
         """
 
+        cipher = Vigenere_Cipher()
+        key = self.Key_Box.text()
+        msg = self.Input_Box.toPlainText()
+
+        if key != "":
+            cipher.encrypt(msg, key)
+            self.Output_Box.setPlainText(cipher.cipher_text)
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Missing Key")
+            msg.setIcon(QMessageBox.Warning)
+            _ = msg.exec_()
+
 
     def DecryptVigenere(self):
-        pass
+        """
+        Decrypts Vigenere ciphertext provided in the Input Box using the
+        provided Key, and outputs the decrypted text into the Output Box.
+        """
+
+        cipher = Vigenere_Cipher()
+        key = self.Key_Box.text()
+        msg = self.Input_Box.toPlainText()
+
+        if key != "":
+            cipher.decrypt(msg, key)
+            self.Output_Box.setPlainText(cipher.cipher_text)
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Missing Key")
+            msg.setIcon(QMessageBox.Warning)
+            _ = msg.exec_()
 
 
     def EncryptCaesar(self):
@@ -139,6 +172,24 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         pass
 
 
+    def SaveOutputToFile(self):
+        pass
+
+
+    def SaveKeyToFile(self):
+        pass
+
+
+    def LoadKeyFromFile(self):
+        pass
+
+
+    def Login(self):
+        """
+        Login for the application.
+        """
+
+
     def Run(self):
         currentType = self.Type_Selection.currentText()
         if (self.Mode_Selection.currentText() == "Encrypt"):
@@ -146,11 +197,16 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                 self.EncryptXOR()
             elif (currentType == "Columnar Transposition Cipher"):
                 self.EncryptColumnar()
+            elif (currentType == "Vigenere Cipher"):
+                self.EncryptVigenere()
         else:
             if (currentType == "XOR Cipher"):
                 self.DecryptXOR()
             elif (currentType == "Columnar Transposition Cipher"):
                 self.DecryptColumnar()
+            elif (currentType == "Vigenere Cipher"):
+                self.DecryptVigenere()
+
 
     def Change_Mode(self):
         """
@@ -191,6 +247,9 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
 
     def Change_Type(self):
+        """
+        Resets everything due to a new encryption type being used.
+        """
         self.Change_Mode()
         self.Clear_All()
 
@@ -202,15 +261,10 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
         self.Change_Mode()
 
-
         self.Execute.clicked.connect(self.Run)
         self.Mode_Selection.currentIndexChanged.connect(self.Change_Mode)
         self.Type_Selection.currentIndexChanged.connect(self.Change_Type)
         self.Clear_Button.clicked.connect(self.Clear_All)
-
-
-
-
 
 
 if __name__ == "__main__":
