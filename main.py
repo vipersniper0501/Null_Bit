@@ -1,5 +1,6 @@
 import sys
 import os
+from PyQt5.QtGui import QPalette
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt
@@ -37,7 +38,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
     def DecryptXOR(self):
         """
-        Decrypts XOR ciphertext provided in the Input Box using the provided 
+        Decrypts XOR ciphertext provided in the Input Box using the provided
         Key, and outputs the decrypted text into the Output Box.
         """
         cipher = XOR_Cipher()
@@ -50,7 +51,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
     def EncryptColumnar(self):
         """
-        Encrypts the provided plain text in the Input Box with the Columnar 
+        Encrypts the provided plain text in the Input Box with the Columnar
         Transposition Cipher using the provided key.
         """
         cipher = Columnar_Cipher()
@@ -71,7 +72,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             else:
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
-                msg.setText(f"Duplicate letters in key is not allowed.\nDuplicate Letter: {dupLetter}")
+                msg.setText(f"Duplicate letters in key is not allowed.\n"
+                            "Duplicate Letter: {dupLetter}")
                 msg.setIcon(QMessageBox.Warning)
                 _ = msg.exec_()
         else:
@@ -105,7 +107,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             else:
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
-                msg.setText(f"Duplicate letters in key is not allowed.\nDuplicate Letter: {dupLetter}")
+                msg.setText("Duplicate letters in key is not allowed.\n"
+                            f"Duplicate Letter: {dupLetter}")
                 msg.setIcon(QMessageBox.Warning)
                 _ = msg.exec_()
         else:
@@ -117,7 +120,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
     def EncryptVigenere(self):
         """
-        Encrypts the provided plain text in the Input Box with the Vigenere 
+        Encrypts the provided plain text in the Input Box with the Vigenere
         Cipher using the provided key.
         """
 
@@ -183,19 +186,16 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         existing contents of file so use with caution.
         """
 
-        fname, _ = QFileDialog.getSaveFileName(self, "Select File to save key to", "./", ".txt")
+        fname, _ = QFileDialog.getSaveFileName(self, "Select File to save key to", "./", "Key (*.key)")
         if fname != '':
-            if fname.endswith(".txt"):
-                print(fname)
+            if fname.endswith(".key"):
                 with open(fname, "w") as f:
                     L = ["Key:", self.Key_Box.text()]
-                    f.writelines(L) 
+                    f.writelines(L)
             else:
-                msg = QMessageBox()
-                msg.setWindowTitle("Error")
-                msg.setText("Key file must end in .txt")
-                msg.setIcon(QMessageBox.Warning)
-                _ = msg.exec_()
+                with open(fname + ".key", "w") as f:
+                    L = ["Key:", self.Key_Box.text()]
+                    f.writelines(L)
 
 
 
@@ -206,17 +206,21 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         Loads key from a file and puts it in the key box.
         """
 
-        fname = QFileDialog.getOpenFileNames(self, "Select File to extract key from", "./", "Text (*.txt)")
-        print(fname)
+        fname, _ = QFileDialog.getOpenFileNames(self,
+                                                "Select File to"
+                                                " extract key from",
+                                                "./",
+                                                "Key (*.key)")
+        fname = str(fname[0])
         if fname != '' and os.path.isfile(fname):
-            if fname.endswith(".txt"):
+            if fname.endswith(".key"):
                 print(fname)
                 with open(fname, "r") as f:
-                    self.Key_Box.setText(fname.read())
+                    self.Key_Box.setText(f.read()[4:])
             else:
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
-                msg.setText("Key file must end in .txt or file does not exist")
+                msg.setText("File is not of type *.key")
                 msg.setIcon(QMessageBox.Warning)
                 _ = msg.exec_()
 
@@ -251,7 +255,16 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         """
 
         currentType = self.Type_Selection.currentText()
+        if self.Output_Box.toPlainText() != "":
+            self.Input_Box.setPlainText(self.Output_Box.toPlainText())
+
         self.Output_Box.setPlainText("")
+
+        SecurePalette = QPalette()
+        SecurePalette.setColor(QPalette.WindowText, Qt.darkGreen)
+
+        UnsecurePalette = QPalette()
+        UnsecurePalette.setColor(QPalette.WindowText, Qt.red)
 
         if (self.Mode_Selection.currentText() == "Encrypt"):
             if (currentType == "XOR Cipher"):
@@ -261,12 +274,20 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                 self.Key_Box.setReadOnly(False)
                 self.Load_Key_Button.setDisabled(False)
             self.Title1.setText("Plain Text (Input):")
+            self.Title1.setPalette(UnsecurePalette)
+
             self.Title2.setText("Encoded Text (Output):")
+            self.Title2.setPalette(SecurePalette)
+
             self.Key_Label.setText("Encryption Key:")
             self.Save_Output_Button.setText("Save Encrypted Output To File")
         else:
             self.Title1.setText("Cipher Text (Input):")
+            self.Title1.setPalette(SecurePalette)
+
             self.Title2.setText("Decoded Text (Output):")
+            self.Title2.setPalette(UnsecurePalette)
+
             self.Key_Label.setText("Decryption Key:")
             self.Save_Output_Button.setText("Save Decrypted Output To File")
 
