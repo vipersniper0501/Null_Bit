@@ -1,4 +1,5 @@
 import sys
+import os
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt
@@ -177,11 +178,47 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
 
     def SaveKeyToFile(self):
-        pass
+        """
+        Saves the key in Key Box to selected file. Will overwrite
+        existing contents of file so use with caution.
+        """
+
+        fname, _ = QFileDialog.getSaveFileName(self, "Select File to save key to", "./", ".txt")
+        if fname != '':
+            if fname.endswith(".txt"):
+                print(fname)
+                with open(fname, "w") as f:
+                    L = ["Key:", self.Key_Box.text()]
+                    f.writelines(L) 
+            else:
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Key file must end in .txt")
+                msg.setIcon(QMessageBox.Warning)
+                _ = msg.exec_()
+
+
+
 
 
     def LoadKeyFromFile(self):
-        pass
+        """
+        Loads key from a file and puts it in the key box.
+        """
+
+        fname = QFileDialog.getOpenFileNames(self, "Select File to extract key from", "./", "Text (*.txt)")
+        print(fname)
+        if fname != '' and os.path.isfile(fname):
+            if fname.endswith(".txt"):
+                print(fname)
+                with open(fname, "r") as f:
+                    self.Key_Box.setText(fname.read())
+            else:
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Key file must end in .txt or file does not exist")
+                msg.setIcon(QMessageBox.Warning)
+                _ = msg.exec_()
 
 
     def Login(self):
@@ -265,6 +302,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         self.Mode_Selection.currentIndexChanged.connect(self.Change_Mode)
         self.Type_Selection.currentIndexChanged.connect(self.Change_Type)
         self.Clear_Button.clicked.connect(self.Clear_All)
+        self.Save_Key_Button.clicked.connect(self.SaveKeyToFile)
+        self.Load_Key_Button.clicked.connect(self.LoadKeyFromFile)
 
 
 if __name__ == "__main__":

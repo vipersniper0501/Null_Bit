@@ -6,6 +6,13 @@ class Columnar_Cipher():
 
 
     def encrypt(self, msg: str, key: str):
+        """
+        Encrypt provided plain text with columnar transposition cipher
+        using the provided key.
+
+        :param: msg         Message to be encrypted
+        :param: key         Key to encode message with
+        """
         # track key indices
         k_indx = 0
 
@@ -37,6 +44,12 @@ class Columnar_Cipher():
             k_indx += 1
 
     def decrypt(self, cipher: str, key: str):
+        """
+        Decrypts provided cipher text with the provided key.
+
+        :param: cipher      Cipher text to decode
+        :param: key         Key to encode message with
+        """
         # track key indices
         k_indx = 0
 
