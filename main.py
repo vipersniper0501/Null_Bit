@@ -1,10 +1,8 @@
 import sys
 import os
 from PyQt5.QtGui import QPalette
-
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt
-
 from UI.Null_Bit import Ui_MainWindow
 from XOR import XOR_Cipher
 from COLUMNAR import Columnar_Cipher
@@ -72,8 +70,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             else:
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
-                msg.setText(f"Duplicate letters in key is not allowed.\n"
-                            "Duplicate Letter: {dupLetter}")
+                msg.setText("Duplicate letters in key is not allowed.\n"
+                            f"Duplicate Letter: {dupLetter}")
                 msg.setIcon(QMessageBox.Warning)
                 _ = msg.exec_()
         else:
@@ -196,9 +194,6 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                 with open(fname + ".key", "w") as f:
                     L = ["Key:", self.Key_Box.text()]
                     f.writelines(L)
-
-
-
 
 
     def LoadKeyFromFile(self):
