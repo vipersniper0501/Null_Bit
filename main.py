@@ -4,6 +4,7 @@ from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt
 from UI.Null_Bit import Ui_MainWindow
+from login import LoginWindow
 from XOR import XOR_Cipher
 from COLUMNAR import Columnar_Cipher
 from VIGENERE import Vigenere_Cipher
@@ -175,7 +176,21 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
 
     def SaveOutputToFile(self):
-        pass
+        """
+        Saves the output to selected file. Will overwrite existing
+        contents of file so use with caution.
+        """
+
+        fname, _ = QFileDialog.getSaveFileName(self, "File to save output to", "./", "Text (*.txt)")
+        if fname != '':
+            if fname.endswith(".txt"):
+                with open(fname, "w") as f:
+                    L = ["Output:", self.Output_Box.toPlainText()]
+                    f.writelines(L)
+            else:
+                with open(fname + ".txt", "w") as f:
+                    L = ["Output:", self.Output_Box.toPlainText()]
+                    f.writelines(L)
 
 
     def SaveKeyToFile(self):
@@ -218,13 +233,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                 msg.setText("File is not of type *.key")
                 msg.setIcon(QMessageBox.Warning)
                 _ = msg.exec_()
-
-
-    def Login(self):
-        """
-        Login for the application.
-        """
-
+    
 
     def Run(self):
         currentType = self.Type_Selection.currentText()
@@ -327,5 +336,8 @@ if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     app = QApplication(sys.argv)
     main = NullBitMainWindow()
-    main.show()
+    login = LoginWindow()
+    isValidated = login.exec_()
+    if isValidated == 1:
+        main.show()
     sys.exit(app.exec_())
