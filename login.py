@@ -16,7 +16,7 @@ class LoginWindow(QDialog, Ui_Null_Bit_Login):
     def __init__(self, parent=None):
         super(LoginWindow, self).__init__(parent)
         self.setupUi(self)
-        self.setFixedSize(320, 163)
+        #  self.setFixedSize(419, 163)
         self.LoginWindowAssignFunctions()
 
 

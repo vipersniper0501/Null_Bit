@@ -15,6 +15,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
     Manages Null Bit's GUI
     """
 
+    CurrentTab = 0
+
     def __init__(self, parent=None):
         super(NullBitMainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -159,22 +161,6 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             _ = msg.exec_()
 
 
-    def EncryptCaesar(self):
-        pass
-
-
-    def DecryptCaesar(self):
-        pass
-
-
-    def EncryptPigLatin(self):
-        pass
-
-
-    def DecryptPigLatin(self):
-        pass
-
-
     def SaveOutputToFile(self):
         """
         Saves the output to selected file. Will overwrite existing
@@ -233,24 +219,29 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                 msg.setText("File is not of type *.key")
                 msg.setIcon(QMessageBox.Warning)
                 _ = msg.exec_()
-    
+
 
     def Run(self):
+        """
+        Identify the current type and mode and run the associated cipher
+        program.
+        """
         currentType = self.Type_Selection.currentText()
-        if (self.Mode_Selection.currentText() == "Encrypt"):
-            if (currentType == "XOR Cipher"):
-                self.EncryptXOR()
-            elif (currentType == "Columnar Transposition Cipher"):
-                self.EncryptColumnar()
-            elif (currentType == "Vigenere Cipher"):
-                self.EncryptVigenere()
-        else:
-            if (currentType == "XOR Cipher"):
-                self.DecryptXOR()
-            elif (currentType == "Columnar Transposition Cipher"):
-                self.DecryptColumnar()
-            elif (currentType == "Vigenere Cipher"):
-                self.DecryptVigenere()
+        if self.CurrentTab == 0:
+            if self.Mode_Selection.currentText() == "Encrypt":
+                if currentType == "XOR Cipher":
+                    self.EncryptXOR()
+                elif currentType == "Columnar Transposition Cipher":
+                    self.EncryptColumnar()
+                elif currentType == "Vigenere Cipher":
+                    self.EncryptVigenere()
+            else:
+                if currentType == "XOR Cipher":
+                    self.DecryptXOR()
+                elif currentType == "Columnar Transposition Cipher":
+                    self.DecryptColumnar()
+                elif currentType == "Vigenere Cipher":
+                    self.DecryptVigenere()
 
 
     def Change_Mode(self):
@@ -270,8 +261,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         UnsecurePalette = QPalette()
         UnsecurePalette.setColor(QPalette.WindowText, Qt.red)
 
-        if (self.Mode_Selection.currentText() == "Encrypt"):
-            if (currentType == "XOR Cipher"):
+        if self.Mode_Selection.currentText() == "Encrypt":
+            if currentType == "XOR Cipher":
                 self.Key_Box.setReadOnly(True)
                 self.Load_Key_Button.setDisabled(True)
             else:
@@ -340,4 +331,6 @@ if __name__ == "__main__":
     isValidated = login.exec_()
     if isValidated == 1:
         main.show()
+    else:
+        sys.exit(1)
     sys.exit(app.exec_())
