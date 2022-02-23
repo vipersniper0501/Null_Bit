@@ -448,7 +448,7 @@
               <item>
                <widget class="QLabel" name="Stego_Filepath_Title">
                 <property name="text">
-                 <string>Input File To Hide Message In:</string>
+                 <string>Filepath Of File To Hide Message In:</string>
                 </property>
                </widget>
               </item>
@@ -463,17 +463,20 @@
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+               <widget class="QLabel" name="Stego_Picture">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
+                <property name="text">
+                 <string/>
                 </property>
-               </spacer>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>

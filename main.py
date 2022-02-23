@@ -1,7 +1,7 @@
 import sys
 import os
-from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog
+from PyQt5.QtGui import QPalette, QPixmap
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QSizePolicy
 from PyQt5.QtCore import Qt
 from UI.Null_Bit import Ui_MainWindow
 from login import LoginWindow
@@ -348,6 +348,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         Assigns functions to ui buttons along with running startup code.
         """
 
+
+        self.Stego_Picture.setPixmap(QPixmap("./images/missing.png").scaled(self.Stego_Picture.size()*2, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.Change_Mode()
 
         self.Execute.clicked.connect(self.Run)
