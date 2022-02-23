@@ -161,6 +161,33 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             _ = msg.exec_()
 
 
+    def LoadInputFromFile(self):
+        """
+        Loads Input text from a text file.
+        """
+
+        fname, _ = QFileDialog.getOpenFileNames(self,
+                                                "Select File to"
+                                                " load input from",
+                                                "./",
+                                                "Text (*.txt)")
+        if len(fname) != 0:
+            fname = str(fname[0])
+        else:
+            return
+        if fname != '' and os.path.isfile(fname):
+            if fname.endswith(".txt"):
+                with open(fname, "r") as f:
+                    self.Input_Box.setPlainText(f.read()[7:])
+            else:
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("File is not of type *.txt")
+                msg.setIcon(QMessageBox.Warning)
+                _ = msg.exec_()
+
+
+
     def SaveOutputToFile(self):
         """
         Saves the output to selected file. Will overwrite existing
@@ -207,10 +234,12 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                                                 " extract key from",
                                                 "./",
                                                 "Key (*.key)")
-        fname = str(fname[0])
+        if len(fname) != 0:
+            fname = str(fname[0])
+        else:
+            return
         if fname != '' and os.path.isfile(fname):
             if fname.endswith(".key"):
-                print(fname)
                 with open(fname, "r") as f:
                     self.Key_Box.setText(f.read()[4:])
             else:
@@ -250,9 +279,13 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         """
 
         currentType = self.Type_Selection.currentText()
-        if self.Output_Box.toPlainText() != "":
-            self.Input_Box.setPlainText(self.Output_Box.toPlainText())
 
+        # Automatically take output information and put it in input box if
+        # Output_Box is not empty.
+        #  if self.Output_Box.toPlainText() != "":
+            #  self.Input_Box.setPlainText(self.Output_Box.toPlainText())
+
+        self.Input_Box.setPlainText("")
         self.Output_Box.setPlainText("")
 
         SecurePalette = QPalette()
@@ -320,6 +353,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         self.Clear_Button.clicked.connect(self.Clear_All)
         self.Save_Key_Button.clicked.connect(self.SaveKeyToFile)
         self.Load_Key_Button.clicked.connect(self.LoadKeyFromFile)
+        self.Save_Output_Button.clicked.connect(self.SaveOutputToFile)
+        self.Crypto_Load_Input.clicked.connect(self.LoadInputFromFile)
 
 
 if __name__ == "__main__":
