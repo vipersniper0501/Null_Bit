@@ -152,16 +152,6 @@
                 <string>Vigenere Cipher</string>
                </property>
               </item>
-              <item>
-               <property name="text">
-                <string>Caesar Cipher</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Pig Latin</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>
@@ -458,7 +448,7 @@
               <item>
                <widget class="QLabel" name="Stego_Filepath_Title">
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>Input File To Hide Message In:</string>
                 </property>
                </widget>
               </item>
@@ -468,7 +458,7 @@
               <item>
                <widget class="QPushButton" name="Stego_Browse_Filepath_Button">
                 <property name="text">
-                 <string>Browse</string>
+                 <string>Browse Files</string>
                 </property>
                </widget>
               </item>
@@ -520,7 +510,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QPlainTextEdit" name="Stego_Output_Box"/>
+               <widget class="QPlainTextEdit" name="Stego_Output_Box">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="Stego_Save_Output_Button">
@@ -555,7 +549,7 @@
               <item>
                <widget class="QLabel" name="Stego_Key_Title">
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>[Mode] Key</string>
                 </property>
                </widget>
               </item>
