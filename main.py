@@ -212,7 +212,10 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         existing contents of file so use with caution.
         """
 
-        fname, _ = QFileDialog.getSaveFileName(self, "Select File to save key to", "./", "Key (*.key)")
+        fname, _ = QFileDialog.getSaveFileName(self,
+                                               "Select File to save key to",
+                                               "./",
+                                               "Key (*.key)")
         if fname != '':
             if fname.endswith(".key"):
                 with open(fname, "w") as f:
