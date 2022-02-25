@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt5.QtGui import QPalette, QPixmap
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QSizePolicy
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt
 from UI.Null_Bit import Ui_MainWindow
 from login import LoginWindow
@@ -15,12 +15,12 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
     Manages Null Bit's GUI
     """
 
-    CurrentTab = 0
-
     def __init__(self, parent=None):
         super(NullBitMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.setFixedSize(1072, 780)
+        self.startingUp = True
+        self.disableChangeModeWarning = False
         self.NullBit_Assign_Functions()
 
 
@@ -119,6 +119,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             msg.setIcon(QMessageBox.Warning)
             _ = msg.exec_()
 
+
     def EncryptVigenere(self):
         """
         Encrypts the provided plain text in the Input Box with the Vigenere
@@ -185,7 +186,6 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                 msg.setText("File is not of type *.txt")
                 msg.setIcon(QMessageBox.Warning)
                 _ = msg.exec_()
-
 
 
     def SaveOutputToFile(self):
@@ -259,7 +259,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         program.
         """
         currentType = self.Type_Selection.currentText()
-        if self.CurrentTab == 0:
+        if self.tabWidget.currentIndex() == 0:
             if self.Mode_Selection.currentText() == "Encrypt":
                 if currentType == "XOR Cipher":
                     self.EncryptXOR()
@@ -276,54 +276,94 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                     self.DecryptVigenere()
 
 
+    def DisableChangeModeWarning(self, btn):
+        """
+        Disables the warning that appears everytime you try and change
+        encryption modes.
+        """
+
+        if btn.text() == 'Disable this message':
+            self.disableChangeModeWarning = True
+            self.Change_Mode()
+
+    
+    def ChangeModeWarningPopup(self):
+        """
+        Displays Popup warning that input and output boxes will be cleared.
+        """
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Warning")
+        msg.setText("Warning: When changing mode all input and output boxes"
+                    " will be cleared. Are you sure you want to continue?")
+        msg.setIcon(QMessageBox.Warning)
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msg.addButton('Disable this message', QMessageBox.ApplyRole)
+        msg.buttonClicked.connect(self.DisableChangeModeWarning)
+        return msg.exec_()
+
+
     def Change_Mode(self):
         """
         Changes text labels to reflect the current mode
         """
 
-        currentType = self.Type_Selection.currentText()
+        # Default to Okay
+        warning = QMessageBox.Ok
 
-        # Automatically take output information and put it in input box if
-        # Output_Box is not empty.
-        #  if self.Output_Box.toPlainText() != "":
-            #  self.Input_Box.setPlainText(self.Output_Box.toPlainText())
+        if not self.startingUp:
+            # if disable change mode warnign is false
+            if not self.disableChangeModeWarning:
+                warning = self.ChangeModeWarningPopup()
 
-        self.Input_Box.setPlainText("")
-        self.Output_Box.setPlainText("")
+        if self.startingUp or warning == QMessageBox.Ok:
+            currentType = self.Type_Selection.currentText()
 
-        SecurePalette = QPalette()
-        SecurePalette.setColor(QPalette.WindowText, Qt.darkGreen)
+            # Automatically take output information and put it in input box if
+            # Output_Box is not empty.
+            #  if self.Output_Box.toPlainText() != "":
+                #  self.Input_Box.setPlainText(self.Output_Box.toPlainText())
 
-        UnsecurePalette = QPalette()
-        UnsecurePalette.setColor(QPalette.WindowText, Qt.red)
+            self.Input_Box.setPlainText("")
+            self.Output_Box.setPlainText("")
+            self.Key_Box.setText("")
 
-        if self.Mode_Selection.currentText() == "Encrypt":
-            if currentType == "XOR Cipher":
-                self.Key_Box.setReadOnly(True)
-                self.Load_Key_Button.setDisabled(True)
+            SecurePalette = QPalette()
+            SecurePalette.setColor(QPalette.WindowText, Qt.darkGreen)
+
+            UnsecurePalette = QPalette()
+            UnsecurePalette.setColor(QPalette.WindowText, Qt.red)
+
+            if self.Mode_Selection.currentText() == "Encrypt":
+                if currentType == "XOR Cipher":
+                    self.Key_Box.setReadOnly(True)
+                    self.Load_Key_Button.setDisabled(True)
+                else:
+                    self.Key_Box.setReadOnly(False)
+                    self.Load_Key_Button.setDisabled(False)
+                self.Title1.setText("Plain Text (Input):")
+                self.Title1.setPalette(UnsecurePalette)
+
+                self.Title2.setText("Encoded Text (Output):")
+                self.Title2.setPalette(SecurePalette)
+
+                self.Key_Label.setText("Encryption Key:")
+                self.Save_Output_Button.setText("Save Encrypted Output To File")
             else:
+                self.Title1.setText("Cipher Text (Input):")
+                self.Title1.setPalette(SecurePalette)
+
+                self.Title2.setText("Decoded Text (Output):")
+                self.Title2.setPalette(UnsecurePalette)
+
+                self.Key_Label.setText("Decryption Key:")
+                self.Save_Output_Button.setText("Save Decrypted Output To File")
+
                 self.Key_Box.setReadOnly(False)
                 self.Load_Key_Button.setDisabled(False)
-            self.Title1.setText("Plain Text (Input):")
-            self.Title1.setPalette(UnsecurePalette)
-
-            self.Title2.setText("Encoded Text (Output):")
-            self.Title2.setPalette(SecurePalette)
-
-            self.Key_Label.setText("Encryption Key:")
-            self.Save_Output_Button.setText("Save Encrypted Output To File")
-        else:
-            self.Title1.setText("Cipher Text (Input):")
-            self.Title1.setPalette(SecurePalette)
-
-            self.Title2.setText("Decoded Text (Output):")
-            self.Title2.setPalette(UnsecurePalette)
-
-            self.Key_Label.setText("Decryption Key:")
-            self.Save_Output_Button.setText("Save Decrypted Output To File")
-
-            self.Key_Box.setReadOnly(False)
-            self.Load_Key_Button.setDisabled(False)
+            
+            if self.startingUp:
+                self.startingUp = False
 
 
     def Clear_All(self):
@@ -347,7 +387,6 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         """
         Assigns functions to ui buttons along with running startup code.
         """
-
 
         self.Stego_Picture.setPixmap(QPixmap("./images/missing.png").scaled(self.Stego_Picture.size()*2, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.Change_Mode()
