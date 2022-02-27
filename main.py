@@ -195,6 +195,18 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                         Qt.SmoothTransformation
                     )
                 )
+            else:
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Missing Key")
+                msg.setIcon(QMessageBox.Warning)
+                _ = msg.exec_()
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("File is not of type *.png")
+            msg.setIcon(QMessageBox.Warning)
+            _ = msg.exec_()
 
 
     def StegoDecodeImage(self):
@@ -202,11 +214,48 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         Decodes message from a *.png image file with the provided image, message,
         and key.
         """
+        stego = Stego_Image()
+        filepath = self.Stego_Filepath.text()
+        key = self.Stego_Key_Box.text()
+
+        if filepath.endswith('.png'):
+            if key != "":
+                result = stego.decode(filepath, key)
+                
+                if result == 0:
+                    self.Stego_Output_Box.setText(stego.cipher_text)
+                else:
+                    msg = QMessageBox()
+                    msg.setWindowTitle("Error")
+                    msg.setText("Your key did not match.")
+                    msg.setIcon(QMessageBox.Warning)
+                    _ = msg.exec_()
+            else:
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Missing Key")
+                msg.setIcon(QMessageBox.Warning)
+                _ = msg.exec_()
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("File is not of type *.png")
+            msg.setIcon(QMessageBox.Warning)
+            _ = msg.exec_()
+
+
 
     def LoadPNGFile(self):
         """
         Loads png file.
         """
+        def double_QSize(s1):
+            """
+            Only used for doubling QSize values.
+            """
+            r = s1
+            r += s1
+            return r
 
         fname, _ = QFileDialog.getOpenFileNames(self,
                                                 "Select File to"
@@ -220,6 +269,13 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         if fname != '' and os.path.isfile(fname):
             if fname.lower().endswith(".png"):
                 self.Stego_Filepath.setText(fname)
+                self.Stego_Picture.setPixmap(
+                    QPixmap(fname).scaled(
+                        double_QSize(self.Stego_Output_Box.size()),
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation
+                    )
+                )
             else:
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
@@ -471,16 +527,20 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                     if self.Stego_Type_Selection.currentText() == "Hide in Image":
                         self.Stego_Input_Box.setEnabled(True)
                         self.Stego_Load_Input.setEnabled(True)
+                        self.Stego_Save_Output_Button.setEnabled(False)
 
                     self.Stego_Filepath_Title.setText("Filepath Of Image To "
                                                       "Encode Message In:")
                     self.Stego_Output_Title.setText("Encoded Output Saved To: ")
+                    self.Stego_Key_Title.setText("Encryption Key:")
                 else:
                     self.Stego_Input_Box.setEnabled(False)
                     self.Stego_Load_Input.setEnabled(False)
+                    self.Stego_Save_Output_Button.setEnabled(True)
 
                     self.Stego_Filepath_Title.setText("Filepath Of Encoded Image:")
                     self.Stego_Output_Title.setText("Decoded Output: ")
+                    self.Stego_Key_Title.setText("Decryption Key:")
 
 
 
@@ -537,6 +597,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         self.Stego_Load_Key_Button.clicked.connect(self.LoadKeyFromFile)
         self.Stego_Save_Key_Button.clicked.connect(self.SaveKeyToFile)
         self.Stego_Load_Input.clicked.connect(self.LoadInputFromFile)
+        self.Stego_Save_Output_Button.clicked.connect(self.SaveOutputToFile)
         
         self.tabWidget.currentChanged.connect(self.Change_Tab)
 
