@@ -3,7 +3,8 @@ This module is for using steganographic functions in my Null Bit program.
 """
 
 from typing import Union
-import cv2, os, platform
+import os
+import cv2
 from numpy import typing
 
 
@@ -15,6 +16,7 @@ class Stego_Image():
     """
 
     cipher_text = ""
+    encoded_filepath = ""
 
     def __char_generator(self, message: str):
         """
@@ -74,7 +76,7 @@ class Stego_Image():
 
         img = self.__get_image(path)
         if img is None:
-            return -1
+            return
         msg_gen = self.__char_generator(msg+bytes.fromhex("1F").decode("utf-8")+key)
         pattern = self.__gcd(len(img), len(img[0]))
 
@@ -93,7 +95,9 @@ class Stego_Image():
                 break
 
         filename = "./Encoded_"+path.split('/')[-1]
+        self.encoded_filepath = filename
         cv2.imwrite(filename, img)
+
 
     def decode(self, path: str, key: str):
         """
@@ -129,8 +133,7 @@ class Stego_Image():
             return -1
 
 
-print(bytes(bytes.fromhex("1F").decode("utf-8").encode("utf-8")).hex()+" in utf-8")
-steg = Stego_Image()
-steg.encode("/mnt/c/Users/Michael/Downloads/unknown.png", "Hello World!", "SECRET")
-steg.decode("/mnt/g/Coding_Projects/Python/Null_Bit/Encoded_unknown.png", "SECRET")
-
+#  print(bytes(bytes.fromhex("1F").decode("utf-8").encode("utf-8")).hex()+" in utf-8")
+#  steg = Stego_Image()
+#  steg.encode("/mnt/c/Users/Michael/Downloads/unknown.png", "Hello World!", "SECRET")
+#  steg.decode("/mnt/g/Coding_Projects/Python/Null_Bit/Encoded_unknown.png", "SECRET")
