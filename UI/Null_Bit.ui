@@ -383,11 +383,6 @@
                 <string>Hide in Image</string>
                </property>
               </item>
-              <item>
-               <property name="text">
-                <string>Hide in Text</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>
@@ -506,10 +501,16 @@
               <item>
                <widget class="QLabel" name="Stego_Picture">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>475</width>
+                  <height>167</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string/>
@@ -564,6 +565,9 @@
                 </property>
                 <property name="text">
                  <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                 </property>
                 <property name="textInteractionFlags">
                  <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
