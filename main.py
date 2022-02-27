@@ -8,6 +8,7 @@ from login import LoginWindow
 from XOR import XOR_Cipher
 from COLUMNAR import Columnar_Cipher
 from VIGENERE import Vigenere_Cipher
+from STEGANOGRAPHY import Stego_Image
 
 
 class NullBitMainWindow(QMainWindow, Ui_MainWindow):
@@ -15,6 +16,8 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
     Manages Null Bit's GUI
     """
 
+    changingTab = False
+    
     def __init__(self, parent=None):
         super(NullBitMainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -162,6 +165,68 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             _ = msg.exec_()
 
 
+    def StegoEncodeImage(self):
+        """
+        Encodes message into a *.png image file with the provided image, message,
+        and key.
+        """
+
+        stego = Stego_Image()
+        filepath = self.Stego_Filepath.text()
+        key = self.Stego_Key_Box.text()
+        msg = self.Stego_Input_Box.toPlainText()
+
+        def double_QSize(s1):
+            """
+            Only used for doubling QSize values.
+            """
+            r = s1
+            r += s1
+            return r
+
+        if filepath.endswith('.png'):
+            if key != "":
+                stego.encode(filepath, msg, key)
+                self.Stego_Output_Box.setText(stego.encoded_filepath)
+                self.Stego_Picture.setPixmap(
+                    QPixmap(stego.encoded_filepath).scaled(
+                        double_QSize(self.Stego_Output_Box.size()),
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation
+                    )
+                )
+
+
+    def StegoDecodeImage(self):
+        """
+        Decodes message from a *.png image file with the provided image, message,
+        and key.
+        """
+
+    def LoadPNGFile(self):
+        """
+        Loads png file.
+        """
+
+        fname, _ = QFileDialog.getOpenFileNames(self,
+                                                "Select File to"
+                                                " load input from",
+                                                "./",
+                                                "PNG (*.png)")
+        if len(fname) != 0:
+            fname = str(fname[0])
+        else:
+            return
+        if fname != '' and os.path.isfile(fname):
+            if fname.lower().endswith(".png"):
+                self.Stego_Filepath.setText(fname)
+            else:
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("File is not of type *.png")
+                msg.setIcon(QMessageBox.Warning)
+                _ = msg.exec_()
+
     def LoadInputFromFile(self):
         """
         Loads Input text from a text file.
@@ -212,6 +277,10 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         existing contents of file so use with caution.
         """
 
+        if self.tabWidget.currentIndex() == 0:
+            L = ["Key:", self.Key_Box.text()]
+        else:
+            L = ["Key:", self.Stego_Key_Box.text()]
         fname, _ = QFileDialog.getSaveFileName(self,
                                                "Select File to save key to",
                                                "./",
@@ -219,11 +288,9 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         if fname != '':
             if fname.endswith(".key"):
                 with open(fname, "w") as f:
-                    L = ["Key:", self.Key_Box.text()]
                     f.writelines(L)
             else:
                 with open(fname + ".key", "w") as f:
-                    L = ["Key:", self.Key_Box.text()]
                     f.writelines(L)
 
 
@@ -244,7 +311,10 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         if fname != '' and os.path.isfile(fname):
             if fname.endswith(".key"):
                 with open(fname, "r") as f:
-                    self.Key_Box.setText(f.read()[4:])
+                    if self.tabWidget.currentIndex() == 0:
+                        self.Key_Box.setText(f.read()[4:])
+                    else:
+                        self.Stego_Key_Box.setText(f.read()[4:])
             else:
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
@@ -258,8 +328,9 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         Identify the current type and mode and run the associated cipher
         program.
         """
-        currentType = self.Type_Selection.currentText()
+
         if self.tabWidget.currentIndex() == 0:
+            currentType = self.Type_Selection.currentText()
             if self.Mode_Selection.currentText() == "Encrypt":
                 if currentType == "XOR Cipher":
                     self.EncryptXOR()
@@ -274,6 +345,14 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
                     self.DecryptColumnar()
                 elif currentType == "Vigenere Cipher":
                     self.DecryptVigenere()
+        else:
+            currentType = self.Stego_Type_Selection.currentText()
+            if self.Stego_Mode_Selection.currentText() == "Encrypt":
+                if currentType == "Hide in Image":
+                    self.StegoEncodeImage()
+            else:
+                if currentType == "Hide in Image":
+                    self.StegoDecodeImage()
 
 
     def DisableChangeModeWarning(self, btn):
@@ -294,14 +373,39 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
         msg = QMessageBox()
         msg.setWindowTitle("Warning")
-        msg.setText("Warning: When changing mode all input and output boxes"
-                    " will be cleared. Are you sure you want to continue?")
+        msg.setText("Warning: When changing mode or tab, all input and output"
+                    " boxes will be cleared. Are you sure you want "
+                    "to continue?")
         msg.setIcon(QMessageBox.Warning)
         msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         msg.addButton('Disable this message', QMessageBox.ApplyRole)
         msg.buttonClicked.connect(self.DisableChangeModeWarning)
         return msg.exec_()
 
+
+    def Change_Tab(self):
+        warning = QMessageBox.Ok
+        if not self.changingTab:
+            if not self.disableChangeModeWarning:
+                warning = self.ChangeModeWarningPopup()
+
+            if warning == QMessageBox.Ok or self.disableChangeModeWarning:
+                if not self.disableChangeModeWarning:
+                    self.disableChangeModeWarning = True
+                    self.Change_Mode()
+                    self.disableChangeModeWarning = False
+                else:
+                    self.Change_Mode()
+            else:
+                self.changingTab = True
+                self.tabWidget.setCurrentIndex(self.tabWidget.currentIndex() == 0 if 1 else 0)
+                self.changingTab = False
+                # if not self.disableChangeModeWarning:
+                self.disableChangeModeWarning = True
+                self.Change_Mode()
+                self.disableChangeModeWarning = False
+                # else:
+                    # self.Change_Mode()
 
     def Change_Mode(self):
         """
@@ -316,51 +420,69 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             if not self.disableChangeModeWarning:
                 warning = self.ChangeModeWarningPopup()
 
-        if self.startingUp or warning == QMessageBox.Ok:
-            currentType = self.Type_Selection.currentText()
+        if self.startingUp or warning == QMessageBox.Ok or self.disableChangeModeWarning:
+
+            self.Clear_All()
 
             # Automatically take output information and put it in input box if
             # Output_Box is not empty.
             #  if self.Output_Box.toPlainText() != "":
                 #  self.Input_Box.setPlainText(self.Output_Box.toPlainText())
 
-            self.Input_Box.setPlainText("")
-            self.Output_Box.setPlainText("")
-            self.Key_Box.setText("")
+            if self.tabWidget.currentIndex() == 0:
+                currentType = self.Type_Selection.currentText()
 
-            SecurePalette = QPalette()
-            SecurePalette.setColor(QPalette.WindowText, Qt.darkGreen)
 
-            UnsecurePalette = QPalette()
-            UnsecurePalette.setColor(QPalette.WindowText, Qt.red)
+                SecurePalette = QPalette()
+                SecurePalette.setColor(QPalette.WindowText, Qt.darkGreen)
 
-            if self.Mode_Selection.currentText() == "Encrypt":
-                if currentType == "XOR Cipher":
-                    self.Key_Box.setReadOnly(True)
-                    self.Load_Key_Button.setDisabled(True)
+                UnsecurePalette = QPalette()
+                UnsecurePalette.setColor(QPalette.WindowText, Qt.red)
+
+                if self.Mode_Selection.currentText() == "Encrypt":
+                    if currentType == "XOR Cipher":
+                        self.Key_Box.setDisabled(True)
+                        self.Load_Key_Button.setDisabled(True)
+                    else:
+                        self.Key_Box.setDisabled(False)
+                        self.Load_Key_Button.setDisabled(False)
+                    self.Title1.setText("Plain Text (Input):")
+                    self.Title1.setPalette(UnsecurePalette)
+
+                    self.Title2.setText("Encoded Text (Output):")
+                    self.Title2.setPalette(SecurePalette)
+
+                    self.Key_Label.setText("Encryption Key:")
+                    self.Save_Output_Button.setText("Save Encrypted Output To File")
                 else:
-                    self.Key_Box.setReadOnly(False)
+                    self.Title1.setText("Cipher Text (Input):")
+                    self.Title1.setPalette(SecurePalette)
+
+                    self.Title2.setText("Decoded Text (Output):")
+                    self.Title2.setPalette(UnsecurePalette)
+
+                    self.Key_Label.setText("Decryption Key:")
+                    self.Save_Output_Button.setText("Save Decrypted Output To File")
+
+                    self.Key_Box.setDisabled(False)
                     self.Load_Key_Button.setDisabled(False)
-                self.Title1.setText("Plain Text (Input):")
-                self.Title1.setPalette(UnsecurePalette)
-
-                self.Title2.setText("Encoded Text (Output):")
-                self.Title2.setPalette(SecurePalette)
-
-                self.Key_Label.setText("Encryption Key:")
-                self.Save_Output_Button.setText("Save Encrypted Output To File")
             else:
-                self.Title1.setText("Cipher Text (Input):")
-                self.Title1.setPalette(SecurePalette)
+                if self.Stego_Mode_Selection.currentText() == "Encrypt":
+                    if self.Stego_Type_Selection.currentText() == "Hide in Image":
+                        self.Stego_Input_Box.setEnabled(True)
+                        self.Stego_Load_Input.setEnabled(True)
 
-                self.Title2.setText("Decoded Text (Output):")
-                self.Title2.setPalette(UnsecurePalette)
+                    self.Stego_Filepath_Title.setText("Filepath Of Image To "
+                                                      "Encode Message In:")
+                    self.Stego_Output_Title.setText("Encoded Output Saved To: ")
+                else:
+                    self.Stego_Input_Box.setEnabled(False)
+                    self.Stego_Load_Input.setEnabled(False)
 
-                self.Key_Label.setText("Decryption Key:")
-                self.Save_Output_Button.setText("Save Decrypted Output To File")
+                    self.Stego_Filepath_Title.setText("Filepath Of Encoded Image:")
+                    self.Stego_Output_Title.setText("Decoded Output: ")
 
-                self.Key_Box.setReadOnly(False)
-                self.Load_Key_Button.setDisabled(False)
+
 
             if self.startingUp:
                 self.startingUp = False
@@ -373,6 +495,12 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         self.Input_Box.setPlainText("")
         self.Output_Box.setPlainText("")
         self.Key_Box.setText("")
+
+        self.Stego_Input_Box.setPlainText("")
+        self.Stego_Output_Box.setText("")
+        self.Stego_Key_Box.setText("")
+        self.Stego_Filepath.setText("")
+        self.Stego_Picture.clear()
 
 
     def Change_Type(self):
@@ -388,31 +516,29 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         Assigns functions to ui buttons along with running startup code.
         """
 
-        def double_QSize(s1):
-            """
-            Only used for doubling QSize values.
-            """
-            r = s1
-            r += s1
-            return r
 
-        self.Stego_Picture.setPixmap(
-            QPixmap("./images/missing.png").scaled(
-                double_QSize(self.Stego_Picture.size()),
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation
-            )
-        )
         self.Change_Mode()
 
         self.Execute.clicked.connect(self.Run)
+
         self.Mode_Selection.currentIndexChanged.connect(self.Change_Mode)
         self.Type_Selection.currentIndexChanged.connect(self.Change_Type)
         self.Clear_Button.clicked.connect(self.Clear_All)
+
         self.Save_Key_Button.clicked.connect(self.SaveKeyToFile)
         self.Load_Key_Button.clicked.connect(self.LoadKeyFromFile)
         self.Save_Output_Button.clicked.connect(self.SaveOutputToFile)
         self.Crypto_Load_Input.clicked.connect(self.LoadInputFromFile)
+
+        self.Stego_Mode_Selection.currentIndexChanged.connect(self.Change_Mode)
+        self.Stego_Type_Selection.currentIndexChanged.connect(self.Change_Type)
+
+        self.Stego_Browse_Filepath_Button.clicked.connect(self.LoadPNGFile)
+        self.Stego_Load_Key_Button.clicked.connect(self.LoadKeyFromFile)
+        self.Stego_Save_Key_Button.clicked.connect(self.SaveKeyToFile)
+        self.Stego_Load_Input.clicked.connect(self.LoadInputFromFile)
+        
+        self.tabWidget.currentChanged.connect(self.Change_Tab)
 
 
 if __name__ == "__main__":
