@@ -125,15 +125,7 @@ class Stego_Image():
         msg = decodedMessage.split(bytes.fromhex("1f").decode("utf-8"))[0]
         if key == extractedKey:
             self.cipher_text = msg
-            print(self.cipher_text)
             return 0
         else:
             self.cipher_text = ""
-            print(self.cipher_text)
             return -1
-
-
-#  print(bytes(bytes.fromhex("1F").decode("utf-8").encode("utf-8")).hex()+" in utf-8")
-#  steg = Stego_Image()
-#  steg.encode("/mnt/c/Users/Michael/Downloads/unknown.png", "Hello World!", "SECRET")
-#  steg.decode("/mnt/g/Coding_Projects/Python/Null_Bit/Encoded_unknown.png", "SECRET")
