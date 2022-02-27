@@ -286,7 +286,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
             self.disableChangeModeWarning = True
             self.Change_Mode()
 
-    
+
     def ChangeModeWarningPopup(self):
         """
         Displays Popup warning that input and output boxes will be cleared.
@@ -361,7 +361,7 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
                 self.Key_Box.setReadOnly(False)
                 self.Load_Key_Button.setDisabled(False)
-            
+
             if self.startingUp:
                 self.startingUp = False
 
@@ -388,7 +388,21 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         Assigns functions to ui buttons along with running startup code.
         """
 
-        self.Stego_Picture.setPixmap(QPixmap("./images/missing.png").scaled(self.Stego_Picture.size()*2, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        def double_QSize(s1):
+            """
+            Only used for doubling QSize values.
+            """
+            r = s1
+            r += s1
+            return r
+
+        self.Stego_Picture.setPixmap(
+            QPixmap("./images/missing.png").scaled(
+                double_QSize(self.Stego_Picture.size()),
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+        )
         self.Change_Mode()
 
         self.Execute.clicked.connect(self.Run)
