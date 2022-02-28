@@ -63,6 +63,9 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         msg = self.Input_Box.toPlainText()
 
         if key != "":
+            # Making sure there are not duplicate letters in the key as
+            # the columnar transposition cipher does not work when the key
+            # has duplicate letters in the key.
             duplicate_letters = False
             dupLetter = ""
             for i in range(len(key)):
@@ -98,6 +101,9 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
         msg = self.Input_Box.toPlainText()
 
         if key != "":
+            # Making sure there are not duplicate letters in the key as
+            # the columnar transposition cipher does not work when the key
+            # has duplicate letters in the key.
             duplicate_letters = False
             dupLetter = ""
             for i in range(len(key)):
@@ -440,6 +446,11 @@ class NullBitMainWindow(QMainWindow, Ui_MainWindow):
 
 
     def Change_Tab(self):
+        """
+        When the tab changes ensure that the user wants to do so as when the
+        user changes tabs, all input and output boxes will be cleared. This
+        functions shows a popup warning the user of this.
+        """
         warning = QMessageBox.Ok
         if not self.changingTab:
             if not self.disableChangeModeWarning:
