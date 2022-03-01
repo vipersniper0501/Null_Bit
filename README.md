@@ -35,3 +35,8 @@ all that is left to do is to hit run! Your newly encrypted text can be found in
 the output box below the input box. Now that you have your newly encrypted
 cipher-text, you can decide if you want to save the output or key with their
 respective buttons.
+
+## Dependencies
+
+- Python 3.9.7 or newer
+- PyQt5 == 5.14.2
